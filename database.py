@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 class Database:
-    def __init__(self, db_name="campus_lost_found.db"):
+    def __init__(self, db_name="database/campus_lost_found.db"):
         self.db_name = db_name
         self.init_db()
     
@@ -122,7 +122,7 @@ class Database:
         conn.close()
         return item_id
     
-    def get_all_items(self, item_type=None, status='active'):
+    def get_all_items(self, item_type=None, status='Active'):
         """Get all items with optional filtering"""
         conn = self.get_connection()
         cursor = conn.cursor()

@@ -4,18 +4,17 @@ import base64
 import io
 from PIL import Image
 
+
 class ImageStorage:
     def __init__(self):
-        # Using ImgBB free API for image hosting (300 requests/month free)
-        # You need to get a free API key from https://api.imgbb.com/
-        self.api_key = "your_imgbb_api_key_here"  # Replace with your actual API key
+        self.api_key = 'imgbb_api_key'
     
     def upload_image(self, image_file):
         """
         Upload image to ImgBB free hosting service
         Returns URL if successful, None otherwise
         """
-        if self.api_key == "your_imgbb_api_key_here":
+        if self.api_key == "imgbb_api_key":
             st.error("Please set up your ImgBB API key in storage.py")
             return None
             
@@ -30,7 +29,8 @@ class ImageStorage:
             url = "https://api.imgbb.com/1/upload"
             payload = {
                 'key': self.api_key,
-                'image': encoded_image
+                'image': encoded_image,
+                'expiration': 2592000
             }
             
             # Upload image
