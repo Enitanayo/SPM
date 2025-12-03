@@ -10,6 +10,13 @@ class Database:
         self.init_db()
     
     def get_connection(self):
+        if not os.path.exists(self.db_name):
+            parts = self.db_name.rsplit('/', 1)
+            path = parts[0]
+            file = parts[1]
+            os.makedirs(path, exist_ok=True)
+            with open(os.path.join(path,file), 'w') as fp:
+                pass
         """Create and return a database connection"""
         conn = sqlite3.connect(self.db_name)
         conn.row_factory = sqlite3.Row
@@ -122,22 +129,33 @@ class Database:
         conn.close()
         return item_id
     
-    def get_all_items(self, item_type=None, status='Active'):
-        """Get all items with optional filtering"""
+    def get_all_items(self, item_type=None, status=None):
+        """Get items. If status is None, returns ALL items (active, claimed, resolved)."""
         conn = self.get_connection()
         cursor = conn.cursor()
         
+        # Base query
         query = '''
             SELECT i.*, u.username 
             FROM items i 
             JOIN users u ON i.user_id = u.id
-            WHERE i.status = ?
         '''
-        params = [status]
         
+        params = []
+        conditions = []
+        
+        # Add filters only if arguments are provided
+        if status:
+            conditions.append("i.status = ?")
+            params.append(status)
+            
         if item_type:
-            query += ' AND i.item_type = ?'
+            conditions.append("i.item_type = ?")
             params.append(item_type)
+        
+        # Attach conditions to query
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
         
         query += ' ORDER BY i.created_at DESC'
         
